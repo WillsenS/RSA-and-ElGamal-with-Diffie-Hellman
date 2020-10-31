@@ -11,6 +11,15 @@ def gcd(a, b):
 def isCoprime(a, b): 
     return gcd(a, b) == 1
 
+def isPrime(a):
+    if a > 1: 
+        for i in range(2, a):
+            if (a % i) == 0: 
+                return False
+        return True
+    else:
+        return False
+
 def toitentEuler(p,q):
     return (p-1)*(q-1)
 
@@ -66,11 +75,21 @@ def RSA(block,e,n):
 
 def main():
     print("############ THIS IS ALICE ############")
-    p = int(input("masukkan p: "))
-    q = int(input("masukkan q: "))
+    while True:
+        p = int(input("masukkan p: "))
+        q = int(input("masukkan q: "))
+        if (isPrime(p) and isPrime(q)):
+            break
+        else:
+            print("p dan q harus prima!")
     n = int(p) * int(q)
     Tn = toitentEuler(p,q)
-    Pkey = int(input("input public key: "))
+    while True:
+        Pkey = int(input("input public key: "))
+        if isCoprime(Pkey,Tn):
+            break
+        else:
+            print("Harus koprima dengan " + str(Tn))
 
     print("############ THIS IS BOB ############")
     plaintext = input("Masukkan Plaintext: ")
