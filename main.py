@@ -202,6 +202,39 @@ def generateKeyDH(n, g, x, y):
     
     return public_x, public_y, key
 
+# plaintext || ciphertext == file ==============================================
+def convert_bytes_to_binary(byte):
+    return bin(int.from_bytes(byte, byteorder='big'))[2:]
+
+def convert_binary_to_bytes(binary):
+    v = int(binary, 2)
+    b = bytearray()
+    while v:
+        b.append(v & 0xff)
+        v >>= 8
+    return bytes(b[::-1])
+
+def convert_file_to_string(filepath):
+    file = open(filepath, "rb")
+    message_byte = file.read()
+    message_binary = convert_bytes_to_binary(message_byte)
+    if (len(message_binary) % 8) != 0:
+        message_len = len(message_binary) + 8 - (len(message_binary) % 8)
+        message_binary = message_binary.zfill(message_len)
+    message_string = convert_binary_to_string(message_binary)
+    file.close()
+
+    return message_string
+
+def convert_string_to_file(text, filepath):
+    message_binary = convert_string_to_binary(text)
+    message_byte = convert_binary_to_bytes(message_binary)
+    
+    file = open(filepath, "wb")
+    file.write(message_byte)
+    file.close()
+
+
 def main():
     print("############ THIS IS ALICE ############")
     while True:
@@ -255,6 +288,33 @@ def main():
     # print(public_x)
     # print(public_y)
     # print(key)
+
+    # # contoh pemakaian elgamal dari file  ====================
+    # p = 7
+    # public, private = generateKeyElgamal(p)
+    # print(public)
+    # print(private)
+
+    # original_filename = 'test.jpg'
+    # cipher_filename = 'cipherfile.jpg'
+    # plain_filename = 'plainfile.jpg'
+
+    # original_file = convert_file_to_string(original_filename)
+    # print("ORIGINAL FILE =======================================================")
+    # print(original_file)
+    
+    # ciphertext = encryptElgamal(original_file, public)
+    # print("CIPHER FILE ==========================================================")
+    # print(ciphertext)
+    # convert_string_to_file(ciphertext, cipher_filename)
+
+    # cipher_file = convert_file_to_string(cipher_filename)
+    # print(cipher_file)
+    # plaintext = decryptElgamal(cipher_file, private)
+    
+    # print("PLAIN FILE ==========================================================")
+    # print(plaintext)
+    # convert_string_to_file(plaintext, plain_filename)
 
 main()
 
