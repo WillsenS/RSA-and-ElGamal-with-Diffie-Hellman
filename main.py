@@ -1,17 +1,37 @@
-import random
+from Crypto.Util import number
+from math import gcd as bltin_gcd
+import time
 
-def gcd(a, b): 
-    if (a == 0 or b == 0):
-        return 0
-    if (a == b):
-        return a  
-    if (a > b):  
-        return gcd(a - b, b) 
-              
-    return gcd(a, b - a) 
-    
-def isCoprime(a, b): 
-    return gcd(a, b) == 1
+def generateRSAPrivateKey(e, Tn):
+    d = 0
+    x1 = 0
+    x2 = 1
+    y1 = 1
+    temp = Tn
+
+    while e > 0:
+        temp1 = temp//e
+        temp2 = temp - temp1 * e
+        temp = e
+        e = temp2
+
+        x = x2 - temp1 * x1
+        y = d - temp1 * y1
+
+        x2 = x1
+        x1 = x
+        d = y1
+        y1 = y
+
+    if temp == 1:
+        return d + Tn
+
+def isCoprime(a, b):
+    return bltin_gcd(a, b) == 1
+
+def generateLargePrime(n):
+    return number.getPrime(n)
+
 
 def isPrime(a):
     if a > 1: 
@@ -24,14 +44,6 @@ def isPrime(a):
 
 def toitentEuler(p,q):
     return (p-1)*(q-1)
-
-def RSAPrivateKey(e,Tn):
-    d = 1
-    while True:
-        if ((d * e) % Tn == 1):
-            return d
-        else:
-            d += 1
 
 def RSAEncrypt(text,e,n):
     res = []
@@ -236,22 +248,40 @@ def convert_string_to_file(text, filepath):
 
 
 def main():
+    time0 = time.time()
     print("############ THIS IS ALICE ############")
-    while True:
-        p = int(input("masukkan p: "))
-        q = int(input("masukkan q: "))
-        if (isPrime(p) and isPrime(q)):
-            break
-        else:
-            print("p dan q harus prima!")
-    n = int(p) * int(q)
+    # while True:
+    print("Generating Number...")
+    p = generateLargePrime(1024)
+    q = generateLargePrime(1024)
+    print("P = " + str(p))
+    print("Q = " + str(q))
+        # if (isPrime(p) and isPrime(q)):
+        #     break
+        # else:
+        #     print("p dan q harus prima!")
+    n = p * q
     Tn = toitentEuler(p,q)
     while True:
-        Pkey = int(input("input public key: "))
+        Pkey = generateLargePrime(512)
         if isCoprime(Pkey,Tn):
             break
-        else:
-            print("Harus koprima dengan " + str(Tn))
+        # else:
+        #     print("Harus koprima dengan " + str(Tn))
+    print(Pkey)
+    print("############ THIS IS BOB ############")
+    plaintext = input("Masukkan Plaintext: ")
+    enc = RSAEncrypt(plaintext,Pkey,n)
+    print("Encrypted: " + "".join(str(enc)))
+    # print("hasil: ")
+    # print (enc)
+
+    print("############ THIS IS ALICE ############")
+    d = generateRSAPrivateKey(Pkey,Tn)
+    print("Decrypting, please wait...")
+    dec = RSADecrypt(enc,d,n)
+    print("Decryption: "+ dec)
+    print("Time Elapsed: " + str(time.time() - time0) + " Seconds")
 
     # print("############ THIS IS BOB ############")
     # plaintext = input("Masukkan Plaintext: ")
