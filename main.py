@@ -1,5 +1,6 @@
 from Crypto.Util import number
 from math import gcd as bltin_gcd
+import time
 
 def generateRSAPrivateKey(e, Tn):
     d = 0
@@ -214,8 +215,10 @@ def generateKeyDH(n, g, x, y):
     return public_x, public_y, key
 
 def main():
+    time0 = time.time()
     print("############ THIS IS ALICE ############")
     # while True:
+    print("Generating Number...")
     p = generateLargePrime(1024)
     q = generateLargePrime(1024)
     print("P = " + str(p))
@@ -242,8 +245,10 @@ def main():
 
     print("############ THIS IS ALICE ############")
     d = generateRSAPrivateKey(Pkey,Tn)
+    print("Decrypting, please wait...")
     dec = RSADecrypt(enc,d,n)
     print("Decryption: "+ dec)
+    print("Time Elapsed: " + str(time.time() - time0) + " Seconds")
 
     # print("############ THIS IS BOB ############")
     # plaintext = input("Masukkan Plaintext: ")
