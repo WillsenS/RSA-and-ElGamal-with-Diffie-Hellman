@@ -192,8 +192,15 @@ def decryptElgamal(ciphertext, private):
 
     return plaintext
 
+# Diffie-Hellman =========================================
+def generateKeyDH(n, g, x, y):
+    public_x = (g**x) % n
+    public_y = (g**y) % n
 
-
+    key = (public_x**y) % n
+    # key = (public_y**x) % n
+    
+    return public_x, public_y, key
 
 def main():
     print("############ THIS IS ALICE ############")
@@ -213,18 +220,18 @@ def main():
         else:
             print("Harus koprima dengan " + str(Tn))
 
-    print("############ THIS IS BOB ############")
-    plaintext = input("Masukkan Plaintext: ")
-    enc = RSAEncrypt(plaintext,Pkey,n)
-    print("hasil: ")
-    print (enc)
+    # print("############ THIS IS BOB ############")
+    # plaintext = input("Masukkan Plaintext: ")
+    # enc = RSAEncrypt(plaintext,Pkey,n)
+    # print("hasil: ")
+    # print (enc)
 
-    print("############ THIS IS ALICE ############")
-    d = RSAPrivateKey(Pkey,Tn)
-    dec = RSADecrypt(enc,d,n)
-    print(dec)
+    # print("############ THIS IS ALICE ############")
+    # d = RSAPrivateKey(Pkey,Tn)
+    # dec = RSADecrypt(enc,d,n)
+    # print(dec)
 
-    # # contoh pemakaian elgamal
+    # # contoh pemakaian elgamal ====================
     # p = 7
     # public, private = generateKeyElgamal(p)
     # print(public)
@@ -238,6 +245,16 @@ def main():
     # plaintext = decryptElgamal(ciphertext, private)
     # print(plaintext)
 
+    # # contoh pemakaian diffie-hellman ================
+    # n = 103
+    # g = 10
+    # x = 36
+    # y = 58
+
+    # public_x, public_y, key = generateKeyDH(n, g, x, y)
+    # print(public_x)
+    # print(public_y)
+    # print(key)
 
 main()
 
