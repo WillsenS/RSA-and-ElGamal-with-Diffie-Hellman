@@ -320,19 +320,7 @@ def loadRSAPrivateKey(filename):
     }
 
     return private_key
-
-def loadElgamalPrivateKey(filename):
-    input_file = open(filename, "r")
-    temp = input_file.readlines()
-    input_file.close() 
     
-    private_key = {
-        'd' : int(temp[0].strip('\n')),
-        'n' : int(temp[1].strip('\n'))
-    }
-
-    return private_key
-
 def main():
     # menu
     while True:
@@ -354,7 +342,7 @@ def main():
             print("2. Input manual")
             choose = input("Pilihan: ")
             if choose == "1" :
-                length = input("Masukkan panjang kunci: ")
+                length = int(input("Masukkan panjang kunci: "))
                 p = generateLargePrime(length)
                 q = generateLargePrime(length)
                 n = p * q
@@ -436,8 +424,12 @@ def main():
                 print("ERROR: pilihan tidak tersedia!")
                 continue
             
+            time0 = time.time()
             ciphertext = RSAEncrypt(plaintext,public["e"],public["n"])
+            time1 = time.time()
+            
             print("Ciphertext : ", ciphertext)
+            print("Waktu Pemrosesan Enkripsi : ", time1-time0, "seconds")
 
             is_saving = input("Apakah anda ingin menyimpan cipherteks (ya/tidak) : ")
 
@@ -486,9 +478,13 @@ def main():
                 print("ERROR: pilihan tidak tersedia!")
                 continue
             
+            time0 = time.time()
             plaintext = RSADecrypt(ciphertext, private["d"], private["p"] * private["q"])
-            print("Plainteks : ", plaintext)
+            time1 = time.time()
             
+            print("Plainteks : ", plaintext)
+            print("Waktu Pemrosesan Dekripsi : ", time1-time0, "seconds")
+
             is_saving = input("Apakah anda ingin menyimpan plainteks (ya/tidak) : ")
 
             if is_saving == 'ya':
@@ -633,115 +629,7 @@ def main():
             break
         else:
             print("Input tidak sesuai, silakan ulangi lagi!")
-        
-
-    return
-    # ini contoh pemakaian rsa 
-    time0 = time.time()
-    print("############ THIS IS ALICE ############")
-    # while True:
-    print("Generating Number...")
-    p = generateLargePrime(1024)
-    q = generateLargePrime(1024)
-    print("P = " + str(p))
-    print("Q = " + str(q))
-        # if (isPrime(p) and isPrime(q)):
-        #     break
-        # else:
-        #     print("p dan q harus prima!")
-    n = p * q
-    Tn = toitentEuler(p,q)
-    while True:
-        Pkey = generateLargePrime(512)
-        if isCoprime(Pkey,Tn):
-            break
-        # else:
-        #     print("Harus koprima dengan " + str(Tn))
-    print(Pkey)
-    print("############ THIS IS BOB ############")
-    time1 = time.time() - time0
-    plaintext = input("Masukkan Plaintext: ")
-    time2 = time.time()
-    print("Encrypting, please wait...")
-    enc = RSAEncrypt(plaintext,Pkey,n)
-    print("Encrypted: " + "".join(str(enc)))
-    # print("hasil: ")
-    # print (enc)
-
-    print("############ THIS IS ALICE ############")
-    d = generateRSAPrivateKey(Pkey,Tn)
-    print("Decrypting, please wait...")
-    dec = RSADecrypt(enc,d,n)
-    print("Decryption: "+ dec)
-    print("Time Elapsed: " + str(time.time() - time2 + time1) + " Seconds")
-
-
-    # print("############ THIS IS BOB ############")
-    # plaintext = input("Masukkan Plaintext: ")
-    # enc = RSAEncrypt(plaintext,Pkey,n)
-    # print("hasil: ")
-    # print (enc)
-
-    # print("############ THIS IS ALICE ############")
-    # d = RSAPrivateKey(Pkey,Tn)
-    # dec = RSADecrypt(enc,d,n)
-    # print(dec)
-
-    # # contoh pemakaian elgamal ====================
-    # # p = 364244
-    # p = generateLargePrime(20)
-    # print(p)
-    # public, private = generateKeyElgamal(p)
-    # print(public)
-    # print(private)
-    # message = 'kalau simbol pager # atau at @ bisa ga ya'
-    # print(message)
-
-    # ciphertext = encryptElgamal(message, public)
-    # print(ciphertext)
-
-    # plaintext = decryptElgamal(ciphertext, private)
-    # print(plaintext)
-
-    # # contoh pemakaian diffie-hellman ================
-    # n = 103
-    # g = 10
-    # x = 36
-    # y = 58
-
-    # public_x, public_y, key = generateKeyDH(n, g, x, y)
-    # print(public_x)
-    # print(public_y)
-    # print(key)
-
-    # contoh pemakaian elgamal dari file  ====================
-    # p = generateLargePrime(20)
-    # public, private = generateKeyElgamal(p)
-    # print(public)
-    # print(private)
-
-    # original_filename = 'test.jpg'
-    # cipher_filename = 'cipherfile.jpg'
-    # plain_filename = 'plainfile.jpg'
-
-    # original_file = convert_file_to_string(original_filename)
-    # print("ORIGINAL FILE =======================================================")
-    # print(original_file)
     
-    # ciphertext = encryptElgamal(original_file, public)
-    # print("CIPHER FILE ==========================================================")
-    # print(ciphertext)
-    # convert_string_to_file(ciphertext, cipher_filename)
-
-    # cipher_file = convert_file_to_string(cipher_filename)
-    # print(cipher_file)
-    # plaintext = decryptElgamal(cipher_file, private)
-    
-    # print("PLAIN FILE ==========================================================")
-    # print(plaintext)
-    # convert_string_to_file(plaintext, plain_filename)
-    # # p = generateLargePrime(1024)
-    # # print(p)
 main()
 
 
