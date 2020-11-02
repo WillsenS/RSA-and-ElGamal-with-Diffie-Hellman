@@ -249,7 +249,7 @@ def convert_string_to_file(text, filepath):
     file.write(message_byte)
     file.close()
 
-def saveElgamalKey(key, filename):
+def saveKey(key, filename):
     output = ''
     for i in key:
         output += str(key[i])
@@ -284,6 +284,30 @@ def loadElgamalPrivateKey(filename):
 
     return private_key
 
+def loadRSAPublicKey(filename):
+    input_file = open(filename, "r")
+    temp = input_file.readlines()
+    input_file.close() 
+    
+    public_key = {
+        'e' : int(temp[0].strip('\n')),
+        'n' : int(temp[1].strip('\n'))
+    }
+
+    return public_key
+
+def loadElgamalPrivateKey(filename):
+    input_file = open(filename, "r")
+    temp = input_file.readlines()
+    input_file.close() 
+    
+    private_key = {
+        'd' : int(temp[0].strip('\n')),
+        'n' : int(temp[1].strip('\n'))
+    }
+
+    return private_key
+
 def main():
     # menu
     while True:
@@ -300,7 +324,41 @@ def main():
         chosen_menu = input("Pilih nomor menu yang diinginkan : ")
 
         if chosen_menu == '1' :
-            pass
+            p = int(input("Masukkan bilangan prima p: "))
+            q = int(input("Masukkan bilangan prima q: "))
+
+            n = p * q
+            Tn = toitentEuler(p,q) 
+            while True:
+                print("Masukkan bilangan prima e yang koprima dengan", Tn, ": ", end="")
+                e = int(input())
+                if isCoprime(e, Tn):
+                    break
+                else :
+                    print("e belum koprima dengam", Tn, ", ilakan ulangi!")
+            
+            d = generateRSAPrivateKey(e, Tn)
+            public = {
+                "e" : e,
+                "n" : n
+            }
+
+            private = {
+                "d" : d,
+                "n" : n
+            }
+
+            print("Kunci public rsa : ", public)
+            print("Kunci privat rsa : ", private)
+            is_saving = input("Apakah anda ingin menyimpan kunci (ya/tidak) : ")
+
+            if is_saving == 'ya':
+                public_key_filename = input("Nama file untuk kunci publik: ")
+                private_key_filename = input("Nama file untuk kunci privat: ")
+                
+                saveKey(public, public_key_filename)
+                saveKey(private, private_key_filename)
+                print("Penyimpanan berhasil")
         elif chosen_menu == '2':
             pass
         elif chosen_menu == '3':
@@ -322,8 +380,8 @@ def main():
                 public_key_filename = input("Nama file untuk kunci publik: ")
                 private_key_filename = input("Nama file untuk kunci privat: ")
                 
-                saveElgamalKey(public, public_key_filename)
-                saveElgamalKey(private, private_key_filename)
+                saveKey(public, public_key_filename)
+                saveKey(private, private_key_filename)
                 print("Penyimpanan berhasil")
         elif chosen_menu == '5':
             print("========== Pilihan Sumber Plainteks ==============")
@@ -438,54 +496,46 @@ def main():
             print("Input tidak sesuai, silakan ulangi lagi!")
         
 
+    return
+    # ini contoh pemakaian rsa
+    time0 = time.time()
+    print("############ THIS IS ALICE ############")
+    # while True:
+    print("Generating Number...")
+    p = generateLargePrime(1024)
+    q = generateLargePrime(1024)
+    print("P = " + str(p))
+    print("Q = " + str(q))
+        # if (isPrime(p) and isPrime(q)):
+        #     break
+        # else:
+        #     print("p dan q harus prima!")
+    n = p * q
+    Tn = toitentEuler(p,q)
+    while True:
+        Pkey = generateLargePrime(512)
+        if isCoprime(Pkey,Tn):
+            break
+        # else:
+        #     print("Harus koprima dengan " + str(Tn))
+    print(Pkey)
+    print("############ THIS IS BOB ############")
+    time1 = time.time() - time0
+    plaintext = input("Masukkan Plaintext: ")
+    time2 = time.time()
+    print("Encrypting, please wait...")
+    enc = RSAEncrypt(plaintext,Pkey,n)
+    print("Encrypted: " + "".join(str(enc)))
+    # print("hasil: ")
+    # print (enc)
 
-    # # time0 = time.time()
-    # # print("############ THIS IS ALICE ############")
-    # # # while True:
-    # # print("Generating Number...")
-    # # p = generateLargePrime(1024)
-    # # q = generateLargePrime(1024)
-    # # print("P = " + str(p))
-    # # print("Q = " + str(q))
-    # #     # if (isPrime(p) and isPrime(q)):
-    # #     #     break
-    # #     # else:
-    # #     #     print("p dan q harus prima!")
-    # # n = p * q
-    # # Tn = toitentEuler(p,q)
-    # # print(Pkey)
-    # # print("############ THIS IS BOB ############")
-    # # plaintext = input("Masukkan Plaintext: ")
-    # # enc = RSAEncrypt(plaintext,Pkey,n)
-    # # print("Encrypted: " + "".join(str(enc)))
-    # # # print("hasil: ")
-    # # # print (enc)
+    print("############ THIS IS ALICE ############")
+    d = generateRSAPrivateKey(Pkey,Tn)
+    print("Decrypting, please wait...")
+    dec = RSADecrypt(enc,d,n)
+    print("Decryption: "+ dec)
+    print("Time Elapsed: " + str(time.time() - time2 + time1) + " Seconds")
 
-    # # print("############ THIS IS ALICE ############")
-    # # d = generateRSAPrivateKey(Pkey,Tn)
-    # # print("Decrypting, please wait...")
-    # # dec = RSADecrypt(enc,d,n)
-    # # print("Decryption: "+ dec)
-    # # print("Time Elapsed: " + str(time.time() - time0) + " Seconds")
-    #     # else:
-    #     #     print("Harus koprima dengan " + str(Tn))
-    # print(Pkey)
-    # print("############ THIS IS BOB ############")
-    # time1 = time.time() - time0
-    # plaintext = input("Masukkan Plaintext: ")
-    # time2 = time.time()
-    # print("Encrypting, please wait...")
-    # enc = RSAEncrypt(plaintext,Pkey,n)
-    # print("Encrypted: " + "".join(str(enc)))
-    # # print("hasil: ")
-    # # print (enc)
-
-    # print("############ THIS IS ALICE ############")
-    # d = generateRSAPrivateKey(Pkey,Tn)
-    # print("Decrypting, please wait...")
-    # dec = RSADecrypt(enc,d,n)
-    # print("Decryption: "+ dec)
-    # print("Time Elapsed: " + str(time.time() - time2 + time1) + " Seconds")
 
     # print("############ THIS IS BOB ############")
     # plaintext = input("Masukkan Plaintext: ")
