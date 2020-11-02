@@ -1,6 +1,7 @@
 from Crypto.Util import number
 from math import gcd as bltin_gcd
 import time
+import random
 
 def generateRSAPrivateKey(e, Tn):
     d = 0
@@ -126,6 +127,8 @@ def int_length(n):
 def generateKeyElgamal(p) :
     g = random.randrange(1, p-1)
     x = random.randrange(1, p-2)
+    print(g)
+    print(x)
     y = (g**x) % p
     public = {
         "y" : y,
@@ -246,42 +249,224 @@ def convert_string_to_file(text, filepath):
     file.write(message_byte)
     file.close()
 
+def saveElgamalKey(key, filename):
+    output = ''
+    for i in key:
+        output += str(key[i])
+        output += '\n'
+    
+    output_file = open(filename, "w")
+    output_file.writelines(output)
+    output_file.close()
+
+def loadElgamalPublicKey(filename):
+    input_file = open(filename, "r")
+    temp = input_file.readlines()
+    input_file.close() 
+    
+    public_key = {
+        'y' : int(temp[0].strip('\n')),
+        'g' : int(temp[1].strip('\n')),
+        'p' : int(temp[2].strip('\n'))
+    }
+
+    return public_key
+
+def loadElgamalPrivateKey(filename):
+    input_file = open(filename, "r")
+    temp = input_file.readlines()
+    input_file.close() 
+    
+    private_key = {
+        'x' : int(temp[0].strip('\n')),
+        'p' : int(temp[1].strip('\n'))
+    }
+
+    return private_key
 
 def main():
-    time0 = time.time()
-    print("############ THIS IS ALICE ############")
-    # while True:
-    print("Generating Number...")
-    p = generateLargePrime(1024)
-    q = generateLargePrime(1024)
-    print("P = " + str(p))
-    print("Q = " + str(q))
-        # if (isPrime(p) and isPrime(q)):
-        #     break
-        # else:
-        #     print("p dan q harus prima!")
-    n = p * q
-    Tn = toitentEuler(p,q)
+    # menu
     while True:
-        Pkey = generateLargePrime(512)
-        if isCoprime(Pkey,Tn):
-            break
-        # else:
-        #     print("Harus koprima dengan " + str(Tn))
-    print(Pkey)
-    print("############ THIS IS BOB ############")
-    plaintext = input("Masukkan Plaintext: ")
-    enc = RSAEncrypt(plaintext,Pkey,n)
-    print("Encrypted: " + "".join(str(enc)))
-    # print("hasil: ")
-    # print (enc)
+        print("================== Menu =======================")
+        print("1. Pembangkitan kunci RSA")
+        print("2. Encrypt RSA")
+        print("3. Decrypt RSA")
+        print("4. Pembangkitan kunci Elgamal")
+        print("5. Encrypt Elgamal")
+        print("6. Decrypt Elgamal")
+        print("7. Pembangkitan kunci sesi Diffie-Hellman")
+        print("8. Pembangkitan bilangan prima")
+        print("9. Exit")
+        chosen_menu = input("Pilih nomor menu yang diinginkan : ")
 
-    print("############ THIS IS ALICE ############")
-    d = generateRSAPrivateKey(Pkey,Tn)
-    print("Decrypting, please wait...")
-    dec = RSADecrypt(enc,d,n)
-    print("Decryption: "+ dec)
-    print("Time Elapsed: " + str(time.time() - time0) + " Seconds")
+        if chosen_menu == '1' :
+            pass
+        elif chosen_menu == '2':
+            pass
+        elif chosen_menu == '3':
+            pass
+        elif chosen_menu == '4':
+            while True:
+                p = int(input("Masukkan bilangan prima p: "))
+                if isPrime(p):
+                    break
+                else:
+                    print("Bilangan p yang dimasukkan belum prima, silakan ulangi!")
+
+            public, private = generateKeyElgamal(p)
+            print("Kunci public elgamal : ", public)
+            print("Kunci privat elgamal : ", private)
+            is_saving = input("Apakah anda ingin menyimpan kunci (ya/tidak) : ")
+
+            if is_saving == 'ya':
+                public_key_filename = input("Nama file untuk kunci publik: ")
+                private_key_filename = input("Nama file untuk kunci privat: ")
+                
+                saveElgamalKey(public, public_key_filename)
+                saveElgamalKey(private, private_key_filename)
+                print("Penyimpanan berhasil")
+        elif chosen_menu == '5':
+            print("========== Pilihan Sumber Plainteks ==============")
+            print("1. File")
+            print("2. Manual")
+            chosen_input = input("Pilih nomor pilihan yang diinginkan : ")
+            
+            if chosen_input == '1':
+                plaintext_filename = input("Nama file untuk plainteks: ")
+                plaintext = convert_file_to_string(plaintext_filename)
+                print(plaintext)
+            elif chosen_input == '2':
+                plaintext = input("Plainteks: ")
+            else :
+                print("ERROR: pilihan tidak tersedia!")
+                continue
+            
+            print("========== Pilihan Sumber Kunci Publik ==============")
+            print("1. File")
+            print("2. Manual")
+            chosen_key = input("Pilih nomor pilihan yang diinginkan : ")
+            
+            if chosen_key == '1':
+                public_key_filename = input("Nama file untuk kunci publik: ")
+                public = loadElgamalPublicKey(public_key_filename)
+            elif chosen_key == '2':
+                y = input("y : ")
+                g = input("g : ")
+                p = input("p : ")
+
+                public = {
+                    'y' : int(y),
+                    'g' : int(g),
+                    'p' : int(p),
+                }
+            else :
+                print("ERROR: pilihan tidak tersedia!")
+                continue
+            
+            ciphertext = encryptElgamal(plaintext, public)
+            print("Ciphertext : ", ciphertext)
+
+            is_saving = input("Apakah anda ingin menyimpan cipherteks (ya/tidak) : ")
+
+            if is_saving == 'ya':
+                cipherteks_filename = input("Nama file untuk cipherteks : ")
+                convert_string_to_file(ciphertext, cipherteks_filename)
+                print("Penyimpanan berhasil")
+        elif chosen_menu == '6':
+            print("========== Pilihan Sumber Cipherteks ==============")
+            print("1. File")
+            print("2. Manual")
+            chosen_input = input("Pilih nomor pilihan yang diinginkan : ")
+            
+            if chosen_input == '1':
+                ciphertext_filename = input("Nama file untuk plainteks: ")
+                ciphertext = convert_file_to_string(ciphertext_filename)
+                print(ciphertext)
+            elif chosen_input == '2':
+                ciphertext = input("Cipherteks: ")
+            else :
+                print("ERROR: pilihan tidak tersedia!")
+                continue
+            
+            print("========== Pilihan Sumber Kunci Privat ==============")
+            print("1. File")
+            print("2. Manual")
+            chosen_key = input("Pilih nomor pilihan yang diinginkan : ")
+            
+            if chosen_key == '1':
+                private_key_filename = input("Nama file untuk kunci privat: ")
+                private = loadElgamalPrivateKey(private_key_filename)
+            elif chosen_key == '2':
+                x = input("x : ")
+                p = input("p : ")
+
+                private = {
+                    'x' : int(y),
+                    'p' : int(p)
+                }
+            else :
+                print("ERROR: pilihan tidak tersedia!")
+                continue
+            
+            plaintext = decryptElgamal(ciphertext, private)
+            print("Plainteks : ", plaintext)
+            
+            is_saving = input("Apakah anda ingin menyimpan plainteks (ya/tidak) : ")
+
+            if is_saving == 'ya':
+                plaintext_filename = input("Nama file untuk plainteks : ")
+                convert_string_to_file(plaintext, plaintext_filename)
+                print("Penyimpanan berhasil")
+        elif chosen_menu == '7':
+            n = int(input("n : "))
+            g = int(input("g : "))
+            x = int(input("x : "))
+            y = int(input("y : "))
+            
+            public_x, public_y, key = generateKeyDH(n, g, x, y)
+
+            print("Kunci Publik X : ", public_x)
+            print("Kunci Publik Y : ", public_y)
+            print("Kunci Sesi : ", key)
+        elif chosen_menu == '8':
+            bits = int(input("Masukkan jumlah bit bilangan prima yang anda inginkan : "))
+            prime = generateLargePrime(bits)
+            print("Bilangan prima acak dengan", bits, "bit: ", prime)
+        elif chosen_menu == '9':
+            break
+        else:
+            print("Input tidak sesuai, silakan ulangi lagi!")
+        
+
+
+    # time0 = time.time()
+    # print("############ THIS IS ALICE ############")
+    # # while True:
+    # print("Generating Number...")
+    # p = generateLargePrime(1024)
+    # q = generateLargePrime(1024)
+    # print("P = " + str(p))
+    # print("Q = " + str(q))
+    #     # if (isPrime(p) and isPrime(q)):
+    #     #     break
+    #     # else:
+    #     #     print("p dan q harus prima!")
+    # n = p * q
+    # Tn = toitentEuler(p,q)
+    # print(Pkey)
+    # print("############ THIS IS BOB ############")
+    # plaintext = input("Masukkan Plaintext: ")
+    # enc = RSAEncrypt(plaintext,Pkey,n)
+    # print("Encrypted: " + "".join(str(enc)))
+    # # print("hasil: ")
+    # # print (enc)
+
+    # print("############ THIS IS ALICE ############")
+    # d = generateRSAPrivateKey(Pkey,Tn)
+    # print("Decrypting, please wait...")
+    # dec = RSADecrypt(enc,d,n)
+    # print("Decryption: "+ dec)
+    # print("Time Elapsed: " + str(time.time() - time0) + " Seconds")
 
     # print("############ THIS IS BOB ############")
     # plaintext = input("Masukkan Plaintext: ")
@@ -295,7 +480,9 @@ def main():
     # print(dec)
 
     # # contoh pemakaian elgamal ====================
-    # p = 7
+    # # p = 364244
+    # p = generateLargePrime(20)
+    # print(p)
     # public, private = generateKeyElgamal(p)
     # print(public)
     # print(private)
@@ -319,8 +506,8 @@ def main():
     # print(public_y)
     # print(key)
 
-    # # contoh pemakaian elgamal dari file  ====================
-    # p = 7
+    # contoh pemakaian elgamal dari file  ====================
+    # p = generateLargePrime(20)
     # public, private = generateKeyElgamal(p)
     # print(public)
     # print(private)
@@ -345,7 +532,8 @@ def main():
     # print("PLAIN FILE ==========================================================")
     # print(plaintext)
     # convert_string_to_file(plaintext, plain_filename)
-
+    # # p = generateLargePrime(1024)
+    # # print(p)
 main()
 
 
