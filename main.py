@@ -270,7 +270,9 @@ def main():
         #     print("Harus koprima dengan " + str(Tn))
     print(Pkey)
     print("############ THIS IS BOB ############")
+    time1 = time.time() - time0
     plaintext = input("Masukkan Plaintext: ")
+    time2 = time.time()
     enc = RSAEncrypt(plaintext,Pkey,n)
     print("Encrypted: " + "".join(str(enc)))
     # print("hasil: ")
@@ -281,7 +283,7 @@ def main():
     print("Decrypting, please wait...")
     dec = RSADecrypt(enc,d,n)
     print("Decryption: "+ dec)
-    print("Time Elapsed: " + str(time.time() - time0) + " Seconds")
+    print("Time Elapsed: " + str(time.time() - time2 + time1) + " Seconds")
 
     # print("############ THIS IS BOB ############")
     # plaintext = input("Masukkan Plaintext: ")
