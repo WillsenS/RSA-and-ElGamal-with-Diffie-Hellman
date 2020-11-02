@@ -127,8 +127,6 @@ def int_length(n):
 def generateKeyElgamal(p) :
     g = random.randrange(1, p-1)
     x = random.randrange(1, p-2)
-    print(g)
-    print(x)
     y = (g**x) % p
     public = {
         "y" : y,
