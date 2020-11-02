@@ -439,23 +439,42 @@ def main():
         
 
 
-    # time0 = time.time()
-    # print("############ THIS IS ALICE ############")
-    # # while True:
-    # print("Generating Number...")
-    # p = generateLargePrime(1024)
-    # q = generateLargePrime(1024)
-    # print("P = " + str(p))
-    # print("Q = " + str(q))
-    #     # if (isPrime(p) and isPrime(q)):
-    #     #     break
+    # # time0 = time.time()
+    # # print("############ THIS IS ALICE ############")
+    # # # while True:
+    # # print("Generating Number...")
+    # # p = generateLargePrime(1024)
+    # # q = generateLargePrime(1024)
+    # # print("P = " + str(p))
+    # # print("Q = " + str(q))
+    # #     # if (isPrime(p) and isPrime(q)):
+    # #     #     break
+    # #     # else:
+    # #     #     print("p dan q harus prima!")
+    # # n = p * q
+    # # Tn = toitentEuler(p,q)
+    # # print(Pkey)
+    # # print("############ THIS IS BOB ############")
+    # # plaintext = input("Masukkan Plaintext: ")
+    # # enc = RSAEncrypt(plaintext,Pkey,n)
+    # # print("Encrypted: " + "".join(str(enc)))
+    # # # print("hasil: ")
+    # # # print (enc)
+
+    # # print("############ THIS IS ALICE ############")
+    # # d = generateRSAPrivateKey(Pkey,Tn)
+    # # print("Decrypting, please wait...")
+    # # dec = RSADecrypt(enc,d,n)
+    # # print("Decryption: "+ dec)
+    # # print("Time Elapsed: " + str(time.time() - time0) + " Seconds")
     #     # else:
-    #     #     print("p dan q harus prima!")
-    # n = p * q
-    # Tn = toitentEuler(p,q)
+    #     #     print("Harus koprima dengan " + str(Tn))
     # print(Pkey)
     # print("############ THIS IS BOB ############")
+    # time1 = time.time() - time0
     # plaintext = input("Masukkan Plaintext: ")
+    # time2 = time.time()
+    # print("Encrypting, please wait...")
     # enc = RSAEncrypt(plaintext,Pkey,n)
     # print("Encrypted: " + "".join(str(enc)))
     # # print("hasil: ")
@@ -466,7 +485,7 @@ def main():
     # print("Decrypting, please wait...")
     # dec = RSADecrypt(enc,d,n)
     # print("Decryption: "+ dec)
-    # print("Time Elapsed: " + str(time.time() - time0) + " Seconds")
+    # print("Time Elapsed: " + str(time.time() - time2 + time1) + " Seconds")
 
     # print("############ THIS IS BOB ############")
     # plaintext = input("Masukkan Plaintext: ")
