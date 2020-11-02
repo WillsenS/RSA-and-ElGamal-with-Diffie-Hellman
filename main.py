@@ -273,6 +273,7 @@ def main():
     time1 = time.time() - time0
     plaintext = input("Masukkan Plaintext: ")
     time2 = time.time()
+    print("Encrypting, please wait...")
     enc = RSAEncrypt(plaintext,Pkey,n)
     print("Encrypted: " + "".join(str(enc)))
     # print("hasil: ")
