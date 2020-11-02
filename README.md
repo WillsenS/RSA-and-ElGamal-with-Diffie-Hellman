@@ -1,6 +1,6 @@
 # RSA-and-ElGamal-with-Diffie-Hellman
 
-Aplikasi pengenkripsian dengan menggunakan algoritma RSA dan ElGamal dengan pertukaran kunci Diffie Hellman
+Aplikasi pengenkripsian dengan menggunakan algoritma RSA dan ElGamal dengan pertukaran kunci Diffie Hellman\
 Dibuat untuk memenuhi Tugas Kecil 3 Kriptografi
 
 ## Fitur
