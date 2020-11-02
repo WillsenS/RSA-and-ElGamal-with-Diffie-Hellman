@@ -249,6 +249,18 @@ def convert_string_to_file(text, filepath):
     file.write(message_byte)
     file.close()
 
+def convert_list_to_file(ls, filepath):
+    f=open(filepath,'w')
+    for i in ls:
+        f.write(str(i)+'\n')
+    f.close()
+
+def convert_file_to_list(filepath):
+    with open(filepath) as f:
+        content = f.readlines()
+    content = [x.strip() for x in content]
+    return content 
+
 def saveKey(key, filename):
     output = ''
     for i in key:
@@ -296,6 +308,19 @@ def loadRSAPublicKey(filename):
 
     return public_key
 
+def loadRSAPrivateKey(filename):
+    input_file = open(filename, "r")
+    temp = input_file.readlines()
+    input_file.close() 
+    
+    private_key = {
+        'p' : int(temp[0].strip('\n')),
+        'q' : int(temp[1].strip('\n')),
+        'd' : int(temp[2].strip('\n'))
+    }
+
+    return private_key
+
 def loadElgamalPrivateKey(filename):
     input_file = open(filename, "r")
     temp = input_file.readlines()
@@ -324,18 +349,33 @@ def main():
         chosen_menu = input("Pilih nomor menu yang diinginkan : ")
 
         if chosen_menu == '1' :
-            p = int(input("Masukkan bilangan prima p: "))
-            q = int(input("Masukkan bilangan prima q: "))
+            print("Masukkan cara generate key: ")
+            print("1. Auto generate")
+            print("2. Input manual")
+            choose = input("Pilihan: ")
+            if choose == "1" :
+                length = input("Masukkan panjang kunci: ")
+                p = generateLargePrime(length)
+                q = generateLargePrime(length)
+                n = p * q
+                Tn = toitentEuler(p,q)
+                while True:
+                    e = generateLargePrime(length // 2)
+                    if isCoprime(e,Tn):
+                        break
+            if choose == "2" :
+                p = int(input("Masukkan bilangan prima p: "))
+                q = int(input("Masukkan bilangan prima q: "))
 
-            n = p * q
-            Tn = toitentEuler(p,q) 
-            while True:
-                print("Masukkan bilangan prima e yang koprima dengan", Tn, ": ", end="")
-                e = int(input())
-                if isCoprime(e, Tn):
-                    break
-                else :
-                    print("e belum koprima dengam", Tn, ", ilakan ulangi!")
+                n = p * q
+                Tn = toitentEuler(p,q) 
+                while True:
+                    print("Masukkan bilangan prima e yang koprima dengan", Tn, ": ", end="")
+                    e = int(input())
+                    if isCoprime(e, Tn):
+                        break
+                    else :
+                        print("e belum koprima dengam", Tn, ", silakan ulangi!")
             
             d = generateRSAPrivateKey(e, Tn)
             public = {
@@ -344,8 +384,9 @@ def main():
             }
 
             private = {
-                "d" : d,
-                "n" : n
+                "p" : p,
+                "q" : q,
+                "d" : d
             }
 
             print("Kunci public rsa : ", public)
@@ -360,9 +401,100 @@ def main():
                 saveKey(private, private_key_filename)
                 print("Penyimpanan berhasil")
         elif chosen_menu == '2':
-            pass
+            print("========== Pilihan Sumber Plainteks ==============")
+            print("1. File")
+            print("2. Manual")
+            chosen_input = input("Pilih nomor pilihan yang diinginkan : ")
+            
+            if chosen_input == '1':
+                plaintext_filename = input("Nama file untuk plainteks: ")
+                plaintext = convert_file_to_string(plaintext_filename)
+                print(plaintext)
+            elif chosen_input == '2':
+                plaintext = input("Plainteks: ")
+            else :
+                print("ERROR: pilihan tidak tersedia!")
+                continue
+            
+            print("========== Pilihan Sumber Kunci Publik ==============")
+            print("1. File")
+            print("2. Manual")
+            chosen_key = input("Pilih nomor pilihan yang diinginkan : ")
+            
+            if chosen_key == '1':
+                public_key_filename = input("Nama file untuk kunci publik: ")
+                public = loadRSAPublicKey(public_key_filename)
+            elif chosen_key == '2':
+                e = input("e : ")
+                n = input("n : ")
+
+                public = {
+                    'e' : int(e),
+                    'n' : int(n),
+                }
+            else :
+                print("ERROR: pilihan tidak tersedia!")
+                continue
+            
+            ciphertext = RSAEncrypt(plaintext,public["e"],public["n"])
+            print("Ciphertext : ", ciphertext)
+
+            is_saving = input("Apakah anda ingin menyimpan cipherteks (ya/tidak) : ")
+
+            if is_saving == 'ya':
+                cipherteks_filename = input("Nama file untuk cipherteks : ")
+                convert_list_to_file(ciphertext, cipherteks_filename)
+                print("Penyimpanan berhasil")
+
         elif chosen_menu == '3':
-            pass
+            print("========== Pilihan Sumber Cipherteks ==============")
+            print("1. File")
+            print("2. Manual")
+            chosen_input = input("Pilih nomor pilihan yang diinginkan : ")
+            if chosen_input == '1':
+                ciphertext_filename = input("Nama file untuk plainteks: ")
+                ciphertext = convert_file_to_list(ciphertext_filename)
+                ciphertext = [int(i) for i in ciphertext]
+                print(ciphertext)
+            elif chosen_input == '2':
+                ciphertext = input("Cipherteks (pisah dengan spasi): ")
+                ciphertext = list(ciphertext.split(" "))
+                ciphertext = [int(i) for i in ciphertext]
+            else :
+                print("ERROR: pilihan tidak tersedia!")
+                continue
+            
+            print("========== Pilihan Sumber Kunci Privat ==============")
+            print("1. File")
+            print("2. Manual")
+            chosen_key = input("Pilih nomor pilihan yang diinginkan : ")
+            
+            if chosen_key == '1':
+                private_key_filename = input("Nama file untuk kunci privat: ")
+                private = loadRSAPrivateKey(private_key_filename)
+            elif chosen_key == '2':
+                p = input("p : ")
+                q = input("q : ")
+                d = input("d : ")
+
+                private = {
+                    'p' : int(p),
+                    'q' : int(q),
+                    'd' : int(d)
+                }
+            else :
+                print("ERROR: pilihan tidak tersedia!")
+                continue
+            
+            plaintext = RSADecrypt(ciphertext, private["d"], private["p"] * private["q"])
+            print("Plainteks : ", plaintext)
+            
+            is_saving = input("Apakah anda ingin menyimpan plainteks (ya/tidak) : ")
+
+            if is_saving == 'ya':
+                plaintext_filename = input("Nama file untuk plainteks : ")
+                convert_string_to_file(plaintext, plaintext_filename)
+                print("Penyimpanan berhasil")
         elif chosen_menu == '4':
             while True:
                 p = int(input("Masukkan bilangan prima p: "))
