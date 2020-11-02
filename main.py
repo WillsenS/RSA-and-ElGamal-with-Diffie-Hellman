@@ -553,9 +553,12 @@ def main():
                 print("ERROR: pilihan tidak tersedia!")
                 continue
             
+            time0 = time.time()
             ciphertext = encryptElgamal(plaintext, public)
+            time1 = time.time()
+            
             print("Ciphertext : ", ciphertext)
-
+            print("Waktu Pemrosesan Enkripsi : ", time1-time0, "seconds")
             is_saving = input("Apakah anda ingin menyimpan cipherteks (ya/tidak) : ")
 
             if is_saving == 'ya':
@@ -591,16 +594,20 @@ def main():
                 p = input("p : ")
 
                 private = {
-                    'x' : int(y),
+                    'x' : int(x),
                     'p' : int(p)
                 }
             else :
                 print("ERROR: pilihan tidak tersedia!")
                 continue
             
+            time0 = time.time()
             plaintext = decryptElgamal(ciphertext, private)
+            time1 = time.time()
+
             print("Plainteks : ", plaintext)
-            
+            print("Waktu Pemrosesan Dekripsi : ", time1-time0, "seconds")
+
             is_saving = input("Apakah anda ingin menyimpan plainteks (ya/tidak) : ")
 
             if is_saving == 'ya':
@@ -629,7 +636,7 @@ def main():
         
 
     return
-    # ini contoh pemakaian rsa
+    # ini contoh pemakaian rsa 
     time0 = time.time()
     print("############ THIS IS ALICE ############")
     # while True:
